@@ -3,44 +3,75 @@
 #include "sstream"
 #include <string>
 
-Matrix reader(std::filesystem::path parh)
+void FileManager::setMatrix(Matrix& matrix)
 {
-	size_t quantity_row = 0, quantity_col = 0;
-	std::ifstream fin(parh);
-	fin >> quantity_row;
-	fin >> quantity_col;
-	Matrix matrix(quantity_row, quantity_col);
+	matrix_ = &matrix;
+}
 
-	for (size_t i = 0; i < quantity_row; ++i)
+void FileManager::readMatrix(std::filesystem::path file_path)
+{
+	size_t quantity_row = 0, quantity_col = 0, nnz;
+
+	std::ifstream fin(file_path);
 	{
 		std::string str;
 		std::getline(fin, str);
 		std::stringstream sstr(str);
 
-		for (size_t j = 0; j < quantity_col; ++j)
-		{
-			double elem;
-			sstr >> elem;
-			matrix.getElement(i, j) = elem;
-		}
+		sstr >> quantity_row;
+		sstr >> quantity_col;
+		sstr >> nnz;
 	}
-	return matrix;
+
+	Matrix matrix(quantity_row, quantity_col, nnz);
+
+	size_t counter = 0;
+	size_t actual_i = 0;
+	for (size_t n = 0; n < nnz; ++n)
+	{
+		std::string str;
+		std::getline(fin, str);
+		std::stringstream sstr(str);
+	
+		size_t i, j;
+		double value;
+
+		sstr >> i;
+		sstr >> j;
+		sstr >> value;
+
+		matrix.v_[n] = value;
+		matrix.col_index_[n] = j;
+
+		if (actual_i != i)
+		{
+			for (size_t s = actual_i; s < i; ++s) matrix.row_index_[s + 1] = counter;
+			actual_i = i;
+		}
+		matrix.row_index_[i + 1] = ++counter;
+	}
+
+	*matrix_ = std::move(matrix);
+	matrix_ = nullptr;
 }
 
-void writer(std::filesystem::path parh, const Matrix& matrix)
+void FileManager::writeMatrix(std::filesystem::path file_path)
 {
-	std::ofstream fout(parh, std::ios::trunc);
+	std::ofstream fout(file_path, std::ios::trunc);
 
-	fout << matrix.getQuantityRow();
+	fout << matrix_->row_;
 	fout << " ";
-	fout << matrix.getQuantityCal();
+	fout << matrix_->col_;
+	fout << " ";
+	fout << matrix_->nnz_;
+	fout << "\n";
 
-	for (size_t i = 0; i < matrix.getQuantityRow(); ++i)
+	for (size_t i = 0; i < matrix_->row_; ++i)
 	{
-		fout << "\n";
-		for (size_t j = 0; j < matrix.getQuantityCal(); ++j)
+		for (size_t n = matrix_->row_index_[i]; n < matrix_->row_index_[i + 1]; ++n)
 		{
-			fout << matrix.getElement(i, j) << " ";
+			fout << i << " " << matrix_->col_index_[n] << " " << matrix_->v_[n] << "\n";
 		}
 	}
+	matrix_ = nullptr;
 }
