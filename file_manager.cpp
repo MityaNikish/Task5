@@ -7,9 +7,16 @@ Matrix reader(std::filesystem::path parh)
 {
 	size_t quantity_row = 0, quantity_col = 0;
 	std::ifstream fin(parh);
-	fin >> quantity_row;
-	fin >> quantity_col;
+
+	{
+		std::string str;
+		std::getline(fin, str);
+		std::stringstream sstr(str);
+		sstr >> quantity_row;
+		sstr >> quantity_col;
+	}
 	Matrix matrix(quantity_row, quantity_col);
+
 
 	for (size_t i = 0; i < quantity_row; ++i)
 	{
