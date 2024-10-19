@@ -2,11 +2,30 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Sourse.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="file_manager.cpp" />
+    <ClCompile Include="matrix.cpp">
+      <Filter>Realization</Filter>
+    </ClCompile>
+    <ClCompile Include="file_manager.cpp">
+      <Filter>FileManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="file_manager.hpp" />
+    <ClInclude Include="matrix.h">
+      <Filter>Realization</Filter>
+    </ClInclude>
+    <ClInclude Include="file_manager.hpp">
+      <Filter>FileManager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Realization">
+      <UniqueIdentifier>{52d3dc14-c7c1-402a-b0ab-587ea4be6dc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FileManager">
+      <UniqueIdentifier>{d0dc8a69-ba57-4fb8-850f-0d95a1c92b58}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
 </Project>
