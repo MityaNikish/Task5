@@ -1,4 +1,4 @@
-#include "matrix.h"
+п»ї#include "matrix.h"
 #include <memory>
 
 namespace 
@@ -102,7 +102,7 @@ const Matrix Matrix::operator+(const Matrix& other) const
 {
 	if (row_ != other.row_ || col_ != other.col_)
 	{
-		throw "Размерности не совпадают";
+		throw "Р Р°Р·РјРµСЂРЅРѕСЃС‚Рё РЅРµ СЃРѕРІРїР°РґР°СЋС‚";
 	}
 
 	Matrix result(*this);
@@ -171,7 +171,7 @@ double Matrix::operator[](size_t multi_index) const
 {
 	if (multi_index >= row_ * col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "РћР±СЂР°С‰РµРЅРёРµ Рє РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРјСѓ СЌР»РµРјРµРЅС‚Сѓ";
 	}
 
 	for (size_t i = 0; i < row_; ++i)
@@ -221,8 +221,8 @@ Matrix Matrix::getCut(size_t begin_index_row, size_t end_index_row, size_t begin
 
 	size_t counter = 0;
 
-	//Для основной матрицы - i, j, n (i - номер строки элемента матрицы, j - номер столбца элемента матрицы, n - номер элемента матрицы)
-	//Для среза матрицы - i_loc, j_loc, n_loc (i_loc - номер строки элемента среза, j_loc - номер столбца элемента среза, n_loc - номер элемента среза)
+	//Р”Р»СЏ РѕСЃРЅРѕРІРЅРѕР№ РјР°С‚СЂРёС†С‹ - i, j, n (i - РЅРѕРјРµСЂ СЃС‚СЂРѕРєРё СЌР»РµРјРµРЅС‚Р° РјР°С‚СЂРёС†С‹, j - РЅРѕРјРµСЂ СЃС‚РѕР»Р±С†Р° СЌР»РµРјРµРЅС‚Р° РјР°С‚СЂРёС†С‹, n - РЅРѕРјРµСЂ СЌР»РµРјРµРЅС‚Р° РјР°С‚СЂРёС†С‹)
+	//Р”Р»СЏ СЃСЂРµР·Р° РјР°С‚СЂРёС†С‹ - i_loc, j_loc, n_loc (i_loc - РЅРѕРјРµСЂ СЃС‚СЂРѕРєРё СЌР»РµРјРµРЅС‚Р° СЃСЂРµР·Р°, j_loc - РЅРѕРјРµСЂ СЃС‚РѕР»Р±С†Р° СЌР»РµРјРµРЅС‚Р° СЃСЂРµР·Р°, n_loc - РЅРѕРјРµСЂ СЌР»РµРјРµРЅС‚Р° СЃСЂРµР·Р°)
 	for (size_t i_loc = 0; i_loc < cutting.row_; ++i_loc)
 	{
 		const size_t i = begin_index_row + i_loc;
@@ -261,7 +261,7 @@ double Matrix::getElement(size_t index_row, size_t index_col) const
 {
 	if (index_row > row_ || index_col > col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "РћР±СЂР°С‰РµРЅРёРµ Рє РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРјСѓ СЌР»РµРјРµРЅС‚Сѓ";
 	}
 
 	for (size_t j = row_index_[index_row]; j < row_index_[index_row + 1]; ++j)
@@ -279,7 +279,7 @@ void Matrix::setElement(size_t index_row, size_t index_col, double value)
 {
 	if (index_row > row_ || index_col > col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "РћР±СЂР°С‰РµРЅРёРµ Рє РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРјСѓ СЌР»РµРјРµРЅС‚Сѓ";
 	}
 
 	for (size_t n = row_index_[index_row]; n < row_index_[index_row + 1]; ++n)
@@ -303,7 +303,7 @@ void Matrix::addElement(size_t index_row, size_t index_col)
 {
 	if (index_row > row_ || index_col > col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "РћР±СЂР°С‰РµРЅРёРµ Рє РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРјСѓ СЌР»РµРјРµРЅС‚Сѓ";
 	}
 
 	for (size_t n = row_index_[index_row]; n < row_index_[index_row + 1]; ++n)
