@@ -21,18 +21,38 @@ class Matrix
 
 public:
 	Matrix();
-	Matrix(size_t row, size_t col, size_t nnz);
+	~Matrix();
+
 	Matrix(const Matrix& other);
 	Matrix(Matrix&& other) noexcept;
+
 	Matrix& operator=(const Matrix& other);
 	Matrix& operator=(Matrix&& other) noexcept;
-	~Matrix();
+
+	const Matrix operator+(const Matrix& other) const;
+	void operator+=(const Matrix& other);
+
+	const Matrix operator-() const;
+
+	const Matrix operator-(const Matrix& other) const;
+	void operator-=(const Matrix& other);
+
+	const Matrix operator*(const double value) const;
+	void operator*=(const double value);
+
+	double operator[](size_t multi_index) const;
 
 	size_t getQuantityRow(void) const;
 	size_t getQuantityCal(void) const;
 	size_t getNNZ(void) const;
-	double getElement(size_t index_row, size_t index_col) const;
 	Matrix getCut(size_t begin_index_row, size_t end_index_row, size_t begin_index_col, size_t end_index_col) const;
 
+	double getElement(size_t index_row, size_t index_col) const;
+	void setElement(size_t index_row, size_t index_col, double value);
+	void addElement(size_t index_row, size_t index_col);
+
 	friend FileManager;
+
+private:
+	Matrix(size_t row, size_t col, size_t nnz);
 };
