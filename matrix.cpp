@@ -1,11 +1,14 @@
 ﻿#include "matrix.h"
 #include <memory>
+#include <limits>
+
+#include <iostream>
 
 namespace 
 {
 	template <typename T>
 	std::enable_if_t<std::is_arithmetic<T>::value, void>
-	insert(T* array, size_t size, size_t index, T value)
+	insert(T*& array, size_t size, size_t index, T value)
 	{
 		T* new_array = new T[size + 1];
 		std::uninitialized_copy_n(array, index, new_array);
@@ -21,21 +24,40 @@ namespace
 }
 
 
-Matrix::Matrix() : v_(nullptr), col_index_(nullptr), row_index_(nullptr), row_(0), col_(0), nnz_(0) { }
+Matrix::Matrix() : row_(0), col_(0), nnz_(0), v_(nullptr), col_index_(nullptr), row_index_(nullptr) { }
+
+Matrix::Matrix(size_t row, size_t col) : row_(row), col_(col), nnz_(0), v_(nullptr), col_index_(nullptr)
+{
+	if (row_ == 0 || col_ == 0)
+	{
+		throw "Исключение: Размерность матрицы не может быть меньше 1.";
+	}
+
+	row_index_ = new size_t[row_ + 1];
+
+	for (size_t i = 0; i < row_ + 1; ++i)
+	{
+		row_index_[i] = 0;
+	}
+}
+
+Matrix::Matrix(size_t row, size_t col, size_t nnz) : row_(row), col_(col), nnz_(nnz)
+{
+	if (row_ == 0 || col_ == 0)
+	{
+		throw "Исключение: Размерность матрицы не может быть меньше 1.";
+	}
+
+	v_ = new double[nnz_];
+	col_index_ = new size_t[nnz_];
+	row_index_ = new size_t[row_ + 1];
+}
 
 Matrix::~Matrix()
 {
 	delete[] v_;
 	delete[] col_index_;
 	delete[] row_index_;
-}
-
-
-Matrix::Matrix(size_t row, size_t col, size_t nnz) : row_(row), col_(col), nnz_(nnz)
-{
-	v_ = new double[nnz_];
-	col_index_ = new size_t[nnz_];
-	row_index_ = new size_t[row_ + 1];
 }
 
 
@@ -102,7 +124,7 @@ const Matrix Matrix::operator+(const Matrix& other) const
 {
 	if (row_ != other.row_ || col_ != other.col_)
 	{
-		throw "Размерности не совпадают";
+		throw "Исключение: Размерности матриц не совпадают.";
 	}
 
 	Matrix result(*this);
@@ -131,7 +153,7 @@ const Matrix Matrix::operator-() const
 
 	for (size_t n = 0; n < nnz_; ++n)
 	{
-		v_[n] = -v_[n];
+		result.v_[n] = -v_[n];
 	}
 
 	return result;
@@ -151,7 +173,7 @@ void Matrix::operator-=(const Matrix& other)
 
 const Matrix Matrix::operator*(const double value) const
 {
-	Matrix result;
+	Matrix result(*this);
 
 	for (size_t n = 0; n < result.nnz_; ++n)
 	{
@@ -167,11 +189,45 @@ void Matrix::operator*=(const double value)
 }
 
 
+const Matrix Matrix::operator*(const Matrix& other)
+{
+	Matrix result(row_, other.col_);
+
+	if (row_ != other.col_ || col_ != other.row_)
+	{
+		throw "Исключение: Размерности матриц не совпадают.";
+	}
+
+	for (size_t i = 0; i < row_; ++i)
+	{
+		for (size_t j_ = 0; j_ < other.col_; ++j_)
+		{
+			double value = 0;
+			for (size_t j = 0; j < col_; ++j)
+			{
+				value += this->getElement(i, j) * other.getElement(j, j_);
+			}
+			if (abs(value) > std::numeric_limits<double>::epsilon())
+			{
+				result.setElement(i, j_, value);
+			}
+		}
+	}
+
+	return result;
+}
+
+void Matrix::operator*=(const Matrix& other)
+{
+	*this = *this * other;
+}
+
+
 double Matrix::operator[](size_t multi_index) const
 {
-	if (multi_index >= row_ * col_)
+	if (isEmpty() || multi_index >= row_ * col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "Исключение: Обращение к не существующему элементу";
 	}
 
 	for (size_t i = 0; i < row_; ++i)
@@ -189,6 +245,38 @@ double Matrix::operator[](size_t multi_index) const
 			}
 		}
 	}
+}
+
+
+bool Matrix::operator==(const Matrix& other) const
+{
+	if (row_ != other.row_ || col_ != other.col_ || nnz_ != other.nnz_)
+	{
+		return false;
+	}
+
+	for (size_t n = 0; n < nnz_; ++n)
+	{
+		if (abs(v_[n] - other.v_[n]) > std::numeric_limits<double>::epsilon() || col_index_[n] != other.col_index_[n])
+		{
+			return false;
+		}
+	}
+
+	for (size_t i = 0; i < row_ + 1; ++i)
+	{
+		if (row_index_[i] != other.row_index_[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Matrix::operator!=(const Matrix& other) const
+{
+	return !(*this == other);
 }
 
 
@@ -259,40 +347,38 @@ Matrix Matrix::getCut(size_t begin_index_row, size_t end_index_row, size_t begin
 
 double Matrix::getElement(size_t index_row, size_t index_col) const
 {
-	if (index_row > row_ || index_col > col_)
+	if (index_row >= row_ || index_col >= col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "Исключение: Обращение к не существующему элементу";
+	}
+
+	if (!isExistElement(index_row, index_col))
+	{
+		return double{ 0 };
 	}
 
 	for (size_t j = row_index_[index_row]; j < row_index_[index_row + 1]; ++j)
 	{
-		if (row_index_[j] == index_col)
+		if (col_index_[j] == index_col)
 		{
 			return v_[j];
 		}
 	}
-
-	return double {0.0};
 }
 
 void Matrix::setElement(size_t index_row, size_t index_col, double value)
 {
-	if (index_row > row_ || index_col > col_)
+	if (index_row >= row_ || index_col >= col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "Исключение: Обращение к не существующему элементу";
 	}
+
+	addElement(index_row, index_col);
 
 	for (size_t n = row_index_[index_row]; n < row_index_[index_row + 1]; ++n)
 	{
 		if (col_index_[n] == index_col)
 		{
-			v_[n] = value;
-			return;
-		}
-
-		if (col_index_[n] > index_col)
-		{
-			addElement(index_row, index_col);
 			v_[n] = value;
 			return;
 		}
@@ -301,28 +387,83 @@ void Matrix::setElement(size_t index_row, size_t index_col, double value)
 
 void Matrix::addElement(size_t index_row, size_t index_col)
 {
-	if (index_row > row_ || index_col > col_)
+	if (index_row >= row_ || index_col >= col_)
 	{
-		throw "Обращение к не существующему элементу";
+		throw "Исключение: Обращение к не существующему элементу";
 	}
 
+	if (isExistElement(index_row, index_col))
+	{
+		return;
+	}
+
+	size_t n_insert = row_index_[index_row];
 	for (size_t n = row_index_[index_row]; n < row_index_[index_row + 1]; ++n)
 	{
-		if (col_index_[n] < index_col)
-			continue;
-
-		if (col_index_[n] == index_col)
+		n_insert = n;
+		if (col_index_[n] > index_col)
 		{
-			return;
+			break;
 		}
-
-		insert(v_, nnz_, n, 0.0);
-		insert(col_index_, nnz_, n, index_col);
-		break;
+		++n_insert;
 	}
+
+	insert(v_, nnz_, n_insert, 0.0);
+	insert(col_index_, nnz_, n_insert, index_col);
+	++nnz_;
 
 	for (size_t i = index_row; i < row_; ++i)
 	{
 		++row_index_[i + 1];
 	}
+}
+
+bool Matrix::isEmpty() const
+{
+	return nnz_ == 0;
+}
+
+bool Matrix::isExistElement(size_t index_row, size_t index_col) const
+{
+	if (isEmpty())
+	{
+		return false;
+	}
+
+	for (size_t n = row_index_[index_row]; n < row_index_[index_row + 1]; ++n)
+	{
+		if (col_index_[n] == index_col)
+		{
+			return true;
+		}
+
+		if (col_index_[n] > index_col)
+		{
+			return false;
+		}
+	}
+
+	return false;
+}
+
+void Matrix::print_info()
+{
+	std::cout << std::endl;
+	for (size_t n = 0; n < nnz_; ++n)
+	{
+		std::cout << v_[n] << " ";
+	}
+	std::cout << std::endl;
+
+	for (size_t n = 0; n < nnz_; ++n)
+	{
+		std::cout << col_index_[n] << " ";
+	}
+	std::cout << std::endl;
+
+	for (size_t i = 0; i < row_ + 1; ++i)
+	{
+		std::cout << row_index_[i] << " ";
+	}
+	std::cout << std::endl;
 }

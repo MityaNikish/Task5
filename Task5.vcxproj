@@ -140,11 +140,12 @@
     <ClCompile Include="Sourse.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="file_manager.hpp" />
-    <ClInclude Include="matrix.h" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md" />
+    <ClInclude Include="file_manager.hpp" />
+    <ClInclude Include="matrix.h" />
+    <ClInclude Include="test.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
