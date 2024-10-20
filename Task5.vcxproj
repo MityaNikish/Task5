@@ -137,7 +137,7 @@
   <ItemGroup>
     <ClCompile Include="file_manager.cpp" />
     <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="Sourse.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

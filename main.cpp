@@ -9,7 +9,7 @@ int main()
 	//std::filesystem::path path = std::filesystem::current_path();
 	//FileManager FM;
 
-	//Matrix matrix;
+	//Matrix matrix(1,1);
 	//FM.setMatrix(matrix);
 	//FM.readMatrix(path / "input.txt");
 

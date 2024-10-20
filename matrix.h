@@ -29,18 +29,18 @@ public:
 	Matrix& operator=(const Matrix& other);
 	Matrix& operator=(Matrix&& other) noexcept;
 
-	const Matrix operator+(const Matrix& other) const;
+	Matrix operator+(const Matrix& other) const;
 	void operator+=(const Matrix& other);
 
-	const Matrix operator-() const;
+	Matrix operator-() const;
 
-	const Matrix operator-(const Matrix& other) const;
+	Matrix operator-(const Matrix& other) const;
 	void operator-=(const Matrix& other);
 
-	const Matrix operator*(const double value) const;
-	void operator*=(const double value);
+	Matrix operator*(double value) const;
+	void operator*=(double value);
 
-	const Matrix operator*(const Matrix& other);
+	Matrix operator*(const Matrix& other) const;
 	void operator*=(const Matrix& other);
 
 	double operator[](size_t multi_index) const;
@@ -48,24 +48,21 @@ public:
 	bool operator==(const Matrix& other) const;
 	bool operator!=(const Matrix& other) const;
 
-	size_t getQuantityRow(void) const;
-	size_t getQuantityCal(void) const;
-	size_t getNNZ(void) const;
-	Matrix getCut(size_t begin_index_row, size_t end_index_row, size_t begin_index_col, size_t end_index_col) const;
+	[[nodiscard]] size_t getQuantityRow(void) const;
+	[[nodiscard]] size_t getQuantityCal(void) const;
+	[[nodiscard]] size_t getNNZ(void) const;
+	[[nodiscard]] Matrix getCut(size_t begin_index_row, size_t end_index_row, size_t begin_index_col, size_t end_index_col) const;
 
-	double getElement(size_t index_row, size_t index_col) const;
+	[[nodiscard]] double getElement(size_t index_row, size_t index_col) const;
 	void setElement(size_t index_row, size_t index_col, double value);
 	void addElement(size_t index_row, size_t index_col);
 
-	bool isEmpty() const;
-
-	void print_info();
+	[[nodiscard]] bool isEmpty() const;
+	[[nodiscard]] bool isExistElement(size_t index_row, size_t index_col) const;
 
 	friend FileManager;
 
 private:
 	Matrix();
 	Matrix(size_t row, size_t col, size_t nnz);
-
-	bool isExistElement(size_t index_row, size_t index_col) const;
 };

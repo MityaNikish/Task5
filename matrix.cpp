@@ -74,6 +74,11 @@ Matrix::Matrix(Matrix&& other) noexcept
 
 Matrix& Matrix::operator=(const Matrix& other)
 {
+	if (this == &other)
+	{
+		return *this;
+	}
+
 	row_ = other.row_;
 	col_ = other.col_;
 	nnz_ = other.nnz_;
@@ -120,7 +125,7 @@ Matrix& Matrix::operator=(Matrix&& other) noexcept
 }
 
 
-const Matrix Matrix::operator+(const Matrix& other) const
+Matrix Matrix::operator+(const Matrix& other) const
 {
 	if (row_ != other.row_ || col_ != other.col_)
 	{
@@ -147,7 +152,7 @@ void Matrix::operator+=(const Matrix& other)
 }
 
 
-const Matrix Matrix::operator-() const
+Matrix Matrix::operator-() const
 {
 	Matrix result(*this);
 
@@ -160,7 +165,7 @@ const Matrix Matrix::operator-() const
 }
 
 
-const Matrix Matrix::operator-(const Matrix& other) const
+Matrix Matrix::operator-(const Matrix& other) const
 {
 	return Matrix(*this + -other);
 }
@@ -171,7 +176,7 @@ void Matrix::operator-=(const Matrix& other)
 }
 
 
-const Matrix Matrix::operator*(const double value) const
+Matrix Matrix::operator*(const double value) const
 {
 	Matrix result(*this);
 
@@ -189,7 +194,7 @@ void Matrix::operator*=(const double value)
 }
 
 
-const Matrix Matrix::operator*(const Matrix& other)
+Matrix Matrix::operator*(const Matrix& other) const
 {
 	Matrix result(row_, other.col_);
 
@@ -241,10 +246,12 @@ double Matrix::operator[](size_t multi_index) const
 
 			if (i * row_ + col_index_[n] > multi_index)
 			{
-				return double {0.0};
+				break;
 			}
 		}
 	}
+
+	return double{ 0.0 };
 }
 
 
@@ -364,6 +371,8 @@ double Matrix::getElement(size_t index_row, size_t index_col) const
 			return v_[j];
 		}
 	}
+
+	return double{ 0 };
 }
 
 void Matrix::setElement(size_t index_row, size_t index_col, double value)
@@ -444,26 +453,4 @@ bool Matrix::isExistElement(size_t index_row, size_t index_col) const
 	}
 
 	return false;
-}
-
-void Matrix::print_info()
-{
-	std::cout << std::endl;
-	for (size_t n = 0; n < nnz_; ++n)
-	{
-		std::cout << v_[n] << " ";
-	}
-	std::cout << std::endl;
-
-	for (size_t n = 0; n < nnz_; ++n)
-	{
-		std::cout << col_index_[n] << " ";
-	}
-	std::cout << std::endl;
-
-	for (size_t i = 0; i < row_ + 1; ++i)
-	{
-		std::cout << row_index_[i] << " ";
-	}
-	std::cout << std::endl;
 }
