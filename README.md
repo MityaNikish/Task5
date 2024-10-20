@@ -1,11 +1,11 @@
-# Задание
+# Задание №1
 ![image](https://github.com/user-attachments/assets/efa5d8e3-6972-4afc-8d7b-62521efa4b8e)
 ![image](https://github.com/user-attachments/assets/e8e469c7-2ffb-478b-8c58-633babb62c2f)
 ![image](https://github.com/user-attachments/assets/2b5ad883-24e1-43c4-8a2f-c84a3eccb519)
 
-# Пример входных данных:
+## Пример входных данных:
 
-input.txt
+*input.txt*
 ```txt
 10 10 20
 0 0 1
@@ -30,9 +30,10 @@ input.txt
 9 5 20
 ```
 
-# Пример выходных данных
+## Пример выходных данных
+Срез [5:10, 5:10]
 
-output.txt
+*output.txt*
 ```txt
 5 5 5
 0 3 12
@@ -41,4 +42,8 @@ output.txt
 3 3 17
 4 0 20
 ```
-Срез [5:10, 5:10]
+
+
+___
+# Задание №2
+![image](https://github.com/user-attachments/assets/3b46ec9b-5220-4a0e-847d-c99cdf5c25a0)
